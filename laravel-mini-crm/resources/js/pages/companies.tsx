@@ -1,8 +1,17 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { Building2, Eye, Edit, Trash2, Plus } from 'lucide-react';
+import { useState } from 'react';
 
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { companies } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 
@@ -38,6 +47,30 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Companies({ companies, flash }: CompaniesProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [companyToDelete, setCompanyToDelete] = useState<Company | null>(null);
+    const { delete: destroy, processing } = useForm();
+
+    const handleDeleteClick = (company: Company) => {
+        setCompanyToDelete(company);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteConfirm = () => {
+        if (companyToDelete) {
+            destroy(`/companies/${companyToDelete.id}`, {
+                onSuccess: () => {
+                    setDeleteDialogOpen(false);
+                    setCompanyToDelete(null);
+                },
+            });
+        }
+    };
+
+    const handleDeleteCancel = () => {
+        setDeleteDialogOpen(false);
+        setCompanyToDelete(null);
+    };
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Companies" />
@@ -162,6 +195,7 @@ export default function Companies({ companies, flash }: CompaniesProps) {
                                                     size="sm"
                                                     className="text-destructive hover:text-destructive"
                                                     title="Delete company"
+                                                    onClick={() => handleDeleteClick(company)}
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                 </Button>
@@ -314,6 +348,36 @@ export default function Companies({ companies, flash }: CompaniesProps) {
                     </div>
                 )}
             </div>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Delete Company</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to delete "{companyToDelete?.name}"? This action cannot be undone.
+                            <br />
+                            <strong>This will also delete all employees associated with this company.</strong>
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={handleDeleteCancel}
+                            disabled={processing}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={handleDeleteConfirm}
+                            disabled={processing}
+                        >
+                            {processing ? 'Deleting...' : 'Delete Company'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </AppLayout>
     );
 }
