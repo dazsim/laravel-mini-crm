@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CompaniesController;
+use App\Http\Controllers\EmployeesController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -23,9 +24,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('companies/{company}', [CompaniesController::class, 'update'])->name('companies.update');
     Route::delete('companies/{company}', [CompaniesController::class, 'destroy'])->name('companies.destroy');
 
-    Route::get('employees', function () {
-        return Inertia::render('employees');
-    })->name('employees');
+    Route::get('employees', [EmployeesController::class, 'index'])->name('employees.index');
+    Route::get('employees/create', [EmployeesController::class, 'create'])->name('employees.create');
+    Route::post('employees', [EmployeesController::class, 'store'])->name('employees.store');
+    Route::get('employees/{employee}/edit', [EmployeesController::class, 'edit'])->name('employees.edit');
+    Route::put('employees/{employee}', [EmployeesController::class, 'update'])->name('employees.update');
+    Route::delete('employees/{employee}', [EmployeesController::class, 'destroy'])->name('employees.destroy');
 });
 
 require __DIR__.'/settings.php';
