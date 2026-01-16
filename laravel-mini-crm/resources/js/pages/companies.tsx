@@ -220,17 +220,6 @@ export default function Companies({ companies, flash }: CompaniesProps) {
                     )}
                 </div>
 
-                {companies.data.length === 0 && (
-                    <div className="flex h-64 items-center justify-center rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <div className="text-center">
-                            <Building2 className="mx-auto h-12 w-12 text-muted-foreground" />
-                            <h3 className="mt-4 text-lg font-semibold">No companies found</h3>
-                            <p className="text-muted-foreground">
-                                Get started by adding your first company.
-                            </p>
-                        </div>
-                    </div>
-                )}
 
                 {companies.total > companies.per_page && (
                     <div className="flex items-center justify-between">
